@@ -1,0 +1,87 @@
+from fastapi import FastAPI, HTTPException, Query
+from fastapi import FastAPI, Form, Request
+from fastapi.responses import HTMLResponse
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
+from CRUD import (
+    create_auto_gen, create_manual_gen,
+    read_user, update_manual_gen, update_pwd_auto_gen,
+    delete_user
+)
+
+templates = Jinja2Templates(directory="templates")
+app = FastAPI()
+
+@app.get("/", response_class=HTMLResponse)
+def landing_page(request: Request):
+    return templates.TemplateResponse("index.html", {"request": request})
+
+
+# AUTO CREATE
+@app.post("/create/auto")
+def create_auto(username: str, website: str):
+    password = create_auto_gen(username, website)
+    return {
+        "message": "User created successfully (auto-generated password)",
+        "username": username,
+        "website": website,
+        "password": password
+    }
+
+# MANUAL CREATE
+@app.post("/create/manual")
+def create_manual(username: str, website: str, password: str):
+    create_manual_gen(username, website, password)
+    return {
+        "message": "User created successfully (manual password)",
+        "username": username,
+        "website": website,
+        "password": password
+    }
+
+# READ
+@app.get("/read/")
+def read(username: str = Query(None), website: str = Query(None)):
+    if not username and not website:
+        raise HTTPException(status_code=400, detail="Must provide username or website.")
+    user = read_user(username or "", website or "")
+    if user == "Not found":
+        raise HTTPException(status_code=404, detail="User not found")
+    return {
+        "id": user[0],
+        "username": user[1],
+        "website": user[2],
+        "password": user[3]
+    }
+
+# AUTO UPDATE
+@app.put("/update/auto")
+def update_auto(username: str = Query(None), website: str = Query(None)):
+    if not username and not website:
+        raise HTTPException(status_code=400, detail="Must provide username or website.")
+    updated = update_pwd_auto_gen(username or "", website or "")
+    if not updated:
+        raise HTTPException(status_code=404, detail="User not found")
+    return {"message": "Password auto-updated successfully"}
+
+# MANUAL UPDATE
+@app.put("/update/manual")
+def update_manual(username: str = Query(None), website: str = Query(None), new_password: str = Query(...)):
+    if not username and not website:
+        raise HTTPException(status_code=400, detail="Must provide username or website.")
+    updated = update_manual_gen(username or "", website or "", new_password)
+    if not updated:
+        raise HTTPException(status_code=404, detail="User not found")
+    return {"message": "Password manually updated successfully"}
+
+# DELETE
+@app.delete("/delete/")
+def delete(username: str, website: str):
+    if not delete_user(username, website):
+        raise HTTPException(status_code=404, detail="User not found or mismatch")
+    return {"message": "User deleted successfully"}
+
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
