@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Read User</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-width: 300px;
+    }
+    input {
+      padding: 8px;
+      font-size: 1rem;
+    }
+    button {
+      padding: 10px;
+      font-weight: bold;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+    }
+    .result {
+      margin-top: 20px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      background-color: #f9f9f9;
+    }
+    .error {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Reusable Header -->
+  <div id="header-placeholder"></div>
+  <script>
+    fetch('/static/partials/header.html')
+      .then(res => res.text())
+      .then(data => {
+        document.getElementById('header-placeholder').innerHTML = data;
+      });
+  </script>
+
+  <h2>Find User</h2>
+  <form id="searchForm">
+    <input type="text" name="username" id="username" placeholder="Username">
+    <input type="text" name="website" id="website" placeholder="Website">
+    <button type="submit">Search</button>
+  </form>
+
+  <div class="result" id="resultBox" style="display: none;"></div>
+
+  <script>
+    document.getElementById('searchForm').addEventListener('submit', async function (e) {
+      e.preventDefault();
+
+      const username = document.getElementById('username').value.trim();
+      const website = document.getElementById('website').value.trim();
+      const resultBox = document.getElementById('resultBox');
+
+      resultBox.style.display = 'none';
+      resultBox.innerHTML = '';
+
+      if (!username && !website) {
+        resultBox.style.display = 'block';
+        resultBox.innerHTML = '<p class="error">Please provide a username or website.</p>';
+        return;
+      }
+
+      try {
+        const response = await fetch(`/read?username=${encodeURIComponent(username)}&website=${encodeURIComponent(website)}`);
+        const data = await response.json();
+
+        resultBox.style.display = 'block';
+
+        if (!response.ok) {
+          resultBox.innerHTML = `<p class="error"><strong>Error:</strong> ${data.error}</p>`;
+          return;
+        }
+
+        resultBox.innerHTML = `
+          <h3>Result</h3>
+          <p><strong>ID:</strong> ${data.id}</p>
+          <p><strong>Username:</strong> ${data.username}</p>
+          <p><strong>Website:</strong> ${data.website}</p>
+          <p><strong>Password:</strong> ${data.password}</p>
+        `;
+      } catch (err) {
+        resultBox.style.display = 'block';
+        resultBox.innerHTML = `<p class="error">Request failed: ${err.message}</p>`;
+      }
+    });
+  </script>
+
+</body>
+</html>

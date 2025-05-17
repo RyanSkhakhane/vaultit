@@ -1,3 +1,5 @@
+from wsgiref.util import request_uri
+
 from fastapi import FastAPI, HTTPException, Query
 from fastapi import FastAPI, Form, Request
 from fastapi.responses import HTMLResponse
@@ -9,17 +11,23 @@ from CRUD import (
     delete_user
 )
 
-templates = Jinja2Templates(directory="templates")
+templates = Jinja2Templates(directory="assets")
 app = FastAPI()
+app.mount("/static", StaticFiles(directory="assets/static"), name="static")
+app.mount("/assets", StaticFiles(directory="assets"), name="assets")
 
-@app.get("/", response_class=HTMLResponse)
+@app.get("/vaultit", response_class=HTMLResponse)
 def landing_page(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
 
 # AUTO CREATE
+@app.get("/create-auto", response_class=HTMLResponse)
+def auto_create_password(request: Request):
+    return templates.TemplateResponse("auto_create_password.html", {"request": request})
+
 @app.post("/create/auto")
-def create_auto(username: str, website: str):
+def create_auto(username: str = Form(...), website: str = Form(...)):
     password = create_auto_gen(username, website)
     return {
         "message": "User created successfully (auto-generated password)",
@@ -29,8 +37,12 @@ def create_auto(username: str, website: str):
     }
 
 # MANUAL CREATE
+@app.get("/create-manual", response_class=HTMLResponse)
+def create_password(request: Request):
+    return templates.TemplateResponse("create_password.html", {"request": request})
+
 @app.post("/create/manual")
-def create_manual(username: str, website: str, password: str):
+def create_manual(username: str =Form(...), website: str=Form(...), password: str=Form(...)):
     create_manual_gen(username, website, password)
     return {
         "message": "User created successfully (manual password)",
@@ -40,6 +52,10 @@ def create_manual(username: str, website: str, password: str):
     }
 
 # READ
+@app.get("/read-password", response_class=HTMLResponse)
+def read_password(request: Request):
+    return templates.TemplateResponse("read.html", {"request": request})
+
 @app.get("/read/")
 def read(username: str = Query(None), website: str = Query(None)):
     if not username and not website:
