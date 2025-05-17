@@ -1,16 +1,75 @@
-<!-- header.html to be used across all other pages of the app -->
 <link rel="stylesheet" href="/static/css/.css">
+<style>
+  .nav-list {
+    display: flex;
+    list-style: none;
+    gap: 20px;
+    margin: 0;
+    padding: 0;
+    position: relative;
+  }
+
+  .nav-item {
+    position: relative;
+  }
+
+  .nav-link {
+    text-decoration: none;
+    color: #ffffff;
+    padding: 8px 0;
+  }
+
+  .dropdown {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background-color: #023d79;
+    list-style: none;
+    padding: 10px 0;
+    margin: 0;
+    min-width: 150px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+    z-index: 10;
+  }
+
+  .dropdown li {
+    padding: 5px 20px;
+  }
+
+  .dropdown li a {
+    color: #fff;
+    text-decoration: none;
+  }
+
+  .dropdown li a:hover {
+    text-decoration: underline;
+  }
+
+  .nav-item:hover .dropdown {
+    display: block;
+  }
+</style>
+
 <header style="display: flex; align-items: center; justify-content: space-between; padding: 10px 20px; background-color: #023d79; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
   <div class="logo" style="display: flex; align-items: center;">
-    <img src="/static/images/vaultit-white.png" alt="VaultIt Logo" style="height: 40px;" background: white; />
+    <img src="/static/images/vaultit-white.png" alt="VaultIt Logo" style="height: 40px;" />
     <span style="font-size: 1.5rem; font-weight: bold; margin-left: 10px; color: #ffffff;">VaultIt</span>
   </div>
+
   <nav>
-    <ul style="display: flex; list-style: none; gap: 20px; margin: 0; padding: 0;">
-      <li><a href="/assets/index.html" style="text-decoration: none; color: #ffffff;">Home</a></li>
-      <li><a href="/features.html" style="text-decoration: none; color: #ffffff;">Features</a></li>
-      <li><a href="/about.html" style="text-decoration: none; color: #ffffff;">About</a></li>
-      <li><a href="/login.html" style="text-decoration: none; color: #ffffff;">Login</a></li>
+    <ul class="nav-list">
+      <li class="nav-item"><a class="nav-link" href="/assets/index.html">Home</a></li>
+      <li class="nav-item">
+        <a class="nav-link" href="/features.html">Features</a>
+        <ul class="dropdown">
+          <li><a href="/features/passwords.html">Password Vault</a></li>
+          <li><a href="/features/autofill.html">Auto-fill</a></li>
+          <li><a href="/features/generator.html">Password Generator</a></li>
+        </ul>
+      </li>
+      <li class="nav-item"><a class="nav-link" href="/about.html">About</a></li>
+      <li class="nav-item"><a class="nav-link" href="/login.html">Login</a></li>
     </ul>
   </nav>
 </header>
