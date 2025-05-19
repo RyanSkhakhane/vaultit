@@ -20,11 +20,18 @@ app.mount("/assets", StaticFiles(directory="assets"), name="assets")
 def landing_page(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
+@app.get("/", response_class=HTMLResponse)
+def landing_page(request: Request):
+    return templates.TemplateResponse("index.html", {"request": request})
 
 # AUTO CREATE
-@app.get("/create-auto", response_class=HTMLResponse)
-def auto_create_password(request: Request):
-    return templates.TemplateResponse("auto_create_password.html", {"request": request})
+# @app.get("/create-auto", response_class=HTMLResponse)
+# def auto_create_password(request: Request):
+#     return templates.TemplateResponse("auto_create_password.html", {"request": request})
+
+@app.get("/create", response_class=HTMLResponse)
+def show_update_form(request: Request):
+    return templates.TemplateResponse("create.html", {"request": request})
 
 @app.post("/create/auto")
 def create_auto(username: str = Form(...), website: str = Form(...)):
@@ -37,9 +44,9 @@ def create_auto(username: str = Form(...), website: str = Form(...)):
     }
 
 # MANUAL CREATE
-@app.get("/create-manual", response_class=HTMLResponse)
-def create_password(request: Request):
-    return templates.TemplateResponse("create_password.html", {"request": request})
+# @app.get("/create-manual", response_class=HTMLResponse)
+# def create_password(request: Request):
+#     return templates.TemplateResponse("create_password.html", {"request": request})
 
 @app.post("/create/manual")
 def create_manual(username: str =Form(...), website: str=Form(...), password: str=Form(...)):
@@ -70,6 +77,13 @@ def read(username: str = Query(None), website: str = Query(None)):
         "password": user[3]
     }
 
+
+
+@app.get("/update", response_class=HTMLResponse)
+def show_update_form(request: Request):
+    return templates.TemplateResponse("update.html", {"request": request})
+
+
 # AUTO UPDATE
 @app.put("/update/auto")
 def update_auto(username: str = Query(None), website: str = Query(None)):
@@ -91,6 +105,11 @@ def update_manual(username: str = Query(None), website: str = Query(None), new_p
     return {"message": "Password manually updated successfully"}
 
 # DELETE
+@app.get("/delete", response_class=HTMLResponse)
+def show_delete_form(request: Request):
+    return templates.TemplateResponse("delete.html", {"request": request})
+
+
 @app.delete("/delete/")
 def delete(username: str, website: str):
     if not delete_user(username, website):

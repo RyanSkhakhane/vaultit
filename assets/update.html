@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Update Password</title>
+  <link rel="icon" type="image/png" sizes="64x64" href="/static/images/vaultit-white.png">
+
+  <style>
+    
+    body { font-family: sans-serif; padding: 2rem; }
+    label, input, select, button {
+      display: block;
+      margin: 0.5rem 0;
+      padding: 0.5rem;
+      max-width: 500px;
+
+    }
+    html{
+      align-items: center;
+      justify-content: center;
+    }
+    button {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #388e3c;
+    }
+  </style>
+</head>
+<body>
+   <div id="header-placeholder"></div>
+
+
+  <h2>Update Password</h2>
+
+  <form id="update-form">
+    <label for="username">Username</label>
+    <input type="text" id="username" name="username">
+
+    <label for="website">Website</label>
+    <input type="text" id="website" name="website">
+
+    <label for="mode">Update Mode</label>
+    <select id="mode" name="mode">
+      <option value="auto">Auto-Generate</option>
+      <option value="manual">Manual</option>
+    </select>
+
+    <div id="manual-section" style="display:none;">
+      <label for="new_password">New Password</label>
+      <input type="text" id="new_password" name="new_password">
+    </div>
+
+    <button type="submit">Update Password</button>
+  </form>
+
+  <p id="result"></p>
+   <script>
+    fetch('/static/partials/header.html')
+      .then(res => res.text())
+      .then(data => {
+        document.getElementById('header-placeholder').innerHTML = data;
+      });
+  </script>
+  <script>
+    const modeSelect = document.getElementById('mode');
+    const manualSection = document.getElementById('manual-section');
+    const form = document.getElementById('update-form');
+    const result = document.getElementById('result');
+
+    modeSelect.addEventListener('change', () => {
+      manualSection.style.display = modeSelect.value === 'manual' ? 'block' : 'none';
+    });
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const username = document.getElementById('username').value;
+      const website = document.getElementById('website').value;
+      const mode = document.getElementById('mode').value;
+      const new_password = document.getElementById('new_password').value;
+
+      let url = `/update/${mode}?username=${encodeURIComponent(username)}&website=${encodeURIComponent(website)}`;
+      if (mode === 'manual') {
+        url += `&new_password=${encodeURIComponent(new_password)}`;
+      }
+
+      const response = await fetch(url, {
+        method: 'PUT'
+      });
+
+      const data = await response.json();
+
+      result.textContent = response.ok ? data.message : `Error: ${data.detail}`;
+      result.style.color = response.ok ? 'green' : 'red';
+    });
+  </script>
+</body>
+</html>

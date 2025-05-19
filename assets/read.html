@@ -3,6 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <title>Read User</title>
+  <link rel="icon" type="image/png" sizes="64x64" href="/static/images/vaultit-white.png">
+
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -32,6 +34,9 @@
       border: 1px solid #ccc;
       background-color: #f9f9f9;
     }
+    p{
+      text-align: center;
+    }
     .error {
       color: red;
     }
@@ -52,6 +57,7 @@
   <h2>Find User</h2>
   <form id="searchForm">
     <input type="text" name="username" id="username" placeholder="Username">
+    <p>OR</p>
     <input type="text" name="website" id="website" placeholder="Website">
     <button type="submit">Search</button>
   </form>
