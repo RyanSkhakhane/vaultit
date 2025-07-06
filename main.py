@@ -24,10 +24,7 @@ def landing_page(request: Request):
 def landing_page(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
-# AUTO CREATE
-# @app.get("/create-auto", response_class=HTMLResponse)
-# def auto_create_password(request: Request):
-#     return templates.TemplateResponse("auto_create_password.html", {"request": request})
+
 
 @app.get("/create", response_class=HTMLResponse)
 def show_update_form(request: Request):
@@ -43,10 +40,7 @@ def create_auto(username: str = Form(...), website: str = Form(...)):
         "password": password
     }
 
-# MANUAL CREATE
-# @app.get("/create-manual", response_class=HTMLResponse)
-# def create_password(request: Request):
-#     return templates.TemplateResponse("create_password.html", {"request": request})
+
 
 @app.post("/create/manual")
 def create_manual(username: str =Form(...), website: str=Form(...), password: str=Form(...)):
